@@ -7,18 +7,15 @@
 
 #include <iostream>
 #include <fstream>
-
 #include <getopt.h>
-
 #include "exceptions.h"
 #include "settings.h"
-
 #include "simple.h"
+#include "aarch64_mmu_driver.h"
 
 uint64_t MemorySize = 1 * 1024 * 1024; /* Default to 1024 * 1024 KiB = 1 GiB */
 
-static void
-showHelp(const char *progName)
+static void showHelp(const char *progName)
 {
   std::cerr << progName << " [-l] {-s|-a} [-q quantum] [-m memsize] [-t tlbsize] [filenames ...]" << std::endl;
   std::cerr <<
@@ -36,10 +33,9 @@ showHelp(const char *progName)
 }
 
 template <typename M, typename D>
-static void
-run(uint64_t memorySize, ProcessList &processList)
+static void run(uint64_t memorySize, ProcessList &processList)
 {
-  M mmu;
+  M mmu(TLBEntries);
   D driver;
 
   Processor processor(mmu);
@@ -48,12 +44,10 @@ run(uint64_t memorySize, ProcessList &processList)
   processor.run();
 }
 
-static void
-exitWithError(const char *progName, const char *errorMsg)
+static void exitWithError(const char *progName, const char *errorMsg)
 {
   std::cerr << errorMsg;
   showHelp(progName);
-
   exit(-1);
 }
 
@@ -73,27 +67,21 @@ int main(int argc, char **argv)
     case 'l':
       LogMemoryAccesses = true;
       break;
-
     case 's':
       useSimple = true;
       break;
-
     case 'a':
       useAArch64 = true;
       break;
-
     case 'q':
       ProcessTimeQuantum = std::stoi(optarg);
       break;
-
     case 'm':
       MemorySize = std::stoull(optarg);
       break;
-
     case 't':
       TLBEntries = std::stoi(optarg);
       break;
-
     case 'h':
     default:
       showHelp(progName);
@@ -133,8 +121,7 @@ int main(int argc, char **argv)
     if (useSimple)
       run<Simple::SimpleMMU, Simple::SimpleMMUDriver>(MemorySize << 10, processList);
     else if (useAArch64)
-      /* TODO: add run<> call for your page table implementation here. */
-      exitWithError(progName, "Error: AArch64 not yet implemented.\n\n");
+      run<AArch64MMUDriver, AArch64MMUDriver>(MemorySize << 10, processList);
     else
       exitWithError(progName, "Error: unknown page table type specified.\n\n");
   }
