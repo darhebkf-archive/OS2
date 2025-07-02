@@ -1,5 +1,0 @@
-*.o
-pagetables
-*.swp
-tests/physmemmanager
-tests/simple
