@@ -17,3 +17,4 @@ make.txt
 multi-process-test.txt
 simple-reclaim.txt
 simple.txt
+pagetables-base-2024/tests/aarch64
