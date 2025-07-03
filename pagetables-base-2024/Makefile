@@ -40,11 +40,14 @@ OS_OBJS = \
 	os/oskernel.o
 
 ARCH_HEADERS = \
-	arch/include/simple.h
+	arch/include/simple.h	\
+	arch/include/aarch64.h
 
 ARCH_OBJS = \
 	arch/simple/driver.o	\
-	arch/simple/mmu.o
+	arch/simple/mmu.o	\
+	arch/aarch64/driver.o	\
+	arch/aarch64/mmu.o
 
 
 OBJS = \
@@ -56,7 +59,8 @@ OBJS = \
 
 TESTS =	\
 	tests/physmemmanager	\
-	tests/simple
+	tests/simple	\
+	tests/aarch64
 
 TEST_OBJS =	\
 	$(HW_OBJS)	\
